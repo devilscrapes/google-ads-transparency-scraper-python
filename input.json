@@ -1,0 +1,10 @@
+{
+  "searchDomains": [
+    "nike.com"
+  ],
+  "maxResults": 10,
+  "maxPages": 1,
+  "proxyConfiguration": {
+    "useApifyProxy": true
+  }
+}
