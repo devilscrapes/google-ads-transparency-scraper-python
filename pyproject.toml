@@ -1,7 +1,7 @@
 [project]
 name = "google-ads-transparency-scraper-python"
 version = "1.0.0"
-description = "Python example for running the Google Ads Transparency Scraper — Advertiser Ad Library Export on Apify."
+description = "Python example for running the Google Ads Transparency Center Scraper & API on Apify."
 requires-python = ">=3.11"
 dependencies = ["apify-client==3.2.1"]
 

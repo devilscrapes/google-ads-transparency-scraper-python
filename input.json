@@ -2,8 +2,9 @@
   "searchDomains": [
     "nike.com"
   ],
-  "maxResults": 10,
-  "maxPages": 1,
+  "region": "anywhere",
+  "maxResults": 50,
+  "maxPages": 2,
   "proxyConfiguration": {
     "useApifyProxy": true
   }

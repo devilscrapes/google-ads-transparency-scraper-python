@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" width="1280" height="360" role="img">
-<title>Google Ads Transparency Scraper — Advertiser Ad Library Export — Python example by Devil Scrapes</title>
+<title>Google Ads Transparency Center Scraper &amp; API — Python example by Devil Scrapes</title>
 <defs>
 <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
 <stop offset="0" stop-color="#1A0B0B"/><stop offset="0.55" stop-color="#0A0606"/><stop offset="1" stop-color="#3B0A0A"/>
@@ -34,8 +34,8 @@
     <rect x="10" y="-15" width="70" height="30" fill="#4285F4"/>
   </g></svg></g>
 <rect x="80" y="60" width="240" height="240" rx="44" fill="none" stroke="#FFF8E7" stroke-opacity="0.18" stroke-width="2"/>
-<text x="400" y="138" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="42" font-weight="800" fill="#FFF8E7">Google Ads Transparency Scraper</text>
-<text x="400" y="196" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="26" fill="#E7DCCB">Competitor ad creatives from Google&#x27;s Transparency Center,</text><text x="400" y="232" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="26" fill="#E7DCCB">by domain or advertiser ID, as JSON.</text>
+<text x="400" y="138" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="30" font-weight="800" fill="#FFF8E7">Google Ads Transparency Center Scraper &amp; API</text>
+<text x="400" y="196" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="26" fill="#E7DCCB">Competitor ads from the Google Ads Transparency Center to</text><text x="400" y="232" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="26" fill="#E7DCCB">JSON and CSV: creative, format, landing domain, dates,</text>
 <rect x="400" y="262" width="104" height="40" rx="20" fill="#DC2626"/>
 <text x="452.0" y="289" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#FFF8E7" text-anchor="middle">Python</text>
 <text x="520" y="289" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="20" fill="#B9AA97">Apify Actor example · Devil Scrapes</text>

@@ -1,6 +1,6 @@
-<p align="center"><a href="https://apify.com/DevilScrapes/google-ads-transparency"><img src="assets/banner.svg" alt="Google Ads Transparency Scraper — Advertiser Ad Library Export — Python example" width="100%"></a></p>
+<p align="center"><a href="https://apify.com/DevilScrapes/google-ads-transparency"><img src="assets/banner.svg" alt="Google Ads Transparency Center Scraper &amp; API — Python example" width="100%"></a></p>
 
-# Google Ads Transparency Scraper in Python: competitor ad creatives into pandas
+# Google Ads Transparency Center Scraper in Python: competitor ads to JSON and CSV
 
 <p align="center">
 <a href="https://apify.com/DevilScrapes/google-ads-transparency"><img alt="Run on Apify" src="https://img.shields.io/badge/Run%20on-Apify-DC2626?logo=apify&logoColor=white"></a>
@@ -9,36 +9,36 @@
 <a href="https://github.com/devilscrapes/google-ads-transparency-scraper-python/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/devilscrapes/google-ads-transparency-scraper-python/actions/workflows/ci.yml/badge.svg"></a>
 </p>
 
-This repository is a compact, tested Python client for the **[Google Ads Transparency Scraper](https://apify.com/DevilScrapes/google-ads-transparency)** on Apify. You hand it a brand's website domain, or the advertiser ID Google assigns to the account behind the ads, and it brings back a table of every creative the Transparency Center lists for that target in your date window. Each row names the advertiser, links to the creative, says which domain the ad clicks through to, and records when Google first and last showed it. Collection happens on Apify; locally you get `results.json` and `results.csv`.
+Google publishes every ad it serves in a public registry, the Transparency Center, and offers no way to download it. This repository is a compact, tested Python client for the **[Google Ads Transparency Center Scraper](https://apify.com/DevilScrapes/google-ads-transparency)** on Apify, which does the downloading for you. Hand it a competitor's domain such as `nike.com`, or a Google advertiser ID, and it returns a table of that advertiser's ads: which creative, in which format, where the click lands, when Google first and last showed it, and how many impressions it reports. The collection happens on Apify's servers, so your script only starts a run and reads the answer. Output lands in `results.json` and `results.csv`, ready for pandas, a spreadsheet or a warehouse.
 
-> **Actor:** [Google Ads Transparency Scraper — Advertiser Ad Library Export](https://apify.com/DevilScrapes/google-ads-transparency) · **Publisher:** [Devil Scrapes](https://apify.com/DevilScrapes) · **Also in JavaScript:** [google-ads-transparency-scraper-javascript](https://github.com/devilscrapes/google-ads-transparency-scraper-javascript)
+> **Actor:** [Google Ads Transparency Center Scraper & API](https://apify.com/DevilScrapes/google-ads-transparency) · **Publisher:** [Devil Scrapes](https://apify.com/DevilScrapes) · **Also in JavaScript:** [google-ads-transparency-scraper-javascript](https://github.com/devilscrapes/google-ads-transparency-scraper-javascript)
 
 ## 🔥 What you get
 
-- **Two ways to name a target**: a landing domain such as `nike.com`, or an advertiser ID starting with `AR` when you already know exactly which account you want. Both lists can go into the same run.
-- **A creative appears once per run**: when two of your targets surface the same `creative_id`, the repeat is dropped before it is written or billed.
-- **Fetching stops at your budget**: with `maxResults` set to 10, the Actor requests pages only until ten creatives are in hand rather than paging to the end and discarding the rest.
-- **Screening mode for long domain lists**: set `screeningMode` to `true` and each target collapses into a single summary row with an ad count, the earliest and latest dates seen and one sample creative link.
-- **Base fee only after Google replies**: the $0.20 start event is charged once a search gets an answer, even an answer with zero ads. A run that never gets one ends FAILED and costs nothing.
-- **Failures stay local**: a refused first page is retried with backoff on a new proxy session, a failure on a later page keeps the creatives already collected, and a target that still fails is skipped while the rest finish.
+- **One row per ad creative**, naming the advertiser, the creative ID, a link back to the ad, the domain it sends people to, and a format code for text, image or video.
+- **Lifetime of every ad**: Unix timestamps for the first and the last impression Google logged, plus the impression count Google reports where it publishes one.
+- **Domains or advertiser IDs**: look up a brand by the site its ads point to, or by the exact advertiser ID when you already have it, and mix both in one call.
+- **A shared ad is saved once**: when two of your targets surface the same creative, the dataset holds one copy and the bill counts one.
+- **Screening switch**: flip one boolean to get a single summary row per domain (any ads, how many, since when) for checking a long prospect list cheaply.
+- **Limits you control**: a date window, a cap on total rows and a cap on result pages keep a test run small and a large pull predictable.
 
 ## 🎯 Use cases
 
-### Measure how long a rival keeps a creative alive
+### Rank a rival's ads by how long they survive
 
-Subtract `first_shown_ts` from `last_shown_ts` and you have a rough lifespan for each ad. Advertisers rarely keep paying for creatives that lose money, so the ones that stay live for months are usually the ones worth studying before you brief your own designers.
+An ad that keeps running for months has usually earned its budget, and one that vanishes after a week usually has not. Load `results.json` into a DataFrame, subtract the first date from the last and sort. The top of the list is a reading list of what your competitor trusts.
 
-### Benchmark creative volume across a category
+### Prepare a client review with evidence
 
-Put five competing domains in `searchDomains`, run once, and group by `advertiser_name` in a notebook. The count of distinct creatives and the split between text, image and video formats give a quick picture of who is testing hard and who runs the same three ads all year.
+Before a quarterly meeting, pull the three biggest rivals in one run and save a CSV per brand. The creative links open the original ads in Google's own registry, so every slide can point at a source rather than a screenshot.
 
-### Find unexpected advertisers pointing at your domain
+### Watch for ads that use your brand
 
-Search your own domain and compare `advertiser_name` and `advertiser_id` with the accounts you know you operate. An unfamiliar advertiser sending clicks to your site is worth a look by the brand protection or affiliate compliance team.
+Run your own domain on a schedule and compare advertiser names and landing domains with the list you expect. An advertiser you do not recognise sending traffic to a domain that is not yours is worth a closer look.
 
-### Keep a weekly archive for later analysis
+### Screen a prospect list for paid search activity
 
-Point a cron entry at `python main.py --out archive/$(date +%F)` once a week. Concatenating the dated folders later gives you a history of launches and retirements per advertiser that the Transparency Center interface does not let you download.
+Turn on `screeningMode`, paste the domains you plan to contact and keep the ones with `has_ads_detected` set to true. Companies already paying for Google ads are a sharper target for an agency pitch than a cold list.
 
 ## ⚡ Quick start
 
@@ -54,32 +54,33 @@ python main.py                      # uses input.json
 python main.py my-input.json --out data --max-charge 2
 ```
 
-The script starts the [Google Ads Transparency Scraper — Advertiser Ad Library Export](https://apify.com/DevilScrapes/google-ads-transparency), waits for it to finish, prints a link to the run in Apify Console and saves every result to `results.json` and `results.csv`. It exits with code 1 and the run's status message if the run fails.
+The script starts the [Google Ads Transparency Center Scraper & API](https://apify.com/DevilScrapes/google-ads-transparency), waits for it to finish, prints a link to the run in Apify Console and saves every result to `results.json` and `results.csv`. It exits with code 1 and the run's status message if the run fails.
 
 ## 🧩 The core call
 
-Without the command-line wrapper, everything comes down to one client object, one blocking call and a loop over the dataset.
+This is all the integration needs. The official `apify-client` package starts the Actor, waits for the run to end and then reads the rows from the dataset the run produced.
 
 ```python
 from apify_client import ApifyClient
 
 client = ApifyClient("YOUR_APIFY_TOKEN")
-run = client.actor("DevilScrapes/google-ads-transparency").call(run_input={'searchDomains': ['nike.com'], 'maxResults': 10, 'maxPages': 1, 'proxyConfiguration': {'useApifyProxy': True}})
+run = client.actor("DevilScrapes/google-ads-transparency").call(run_input={'searchDomains': ['nike.com'], 'region': 'anywhere', 'maxResults': 50, 'maxPages': 2, 'proxyConfiguration': {'useApifyProxy': True}})
 for item in client.dataset(run.default_dataset_id).iterate_items():
     print(item)
 ```
 
 ## 📥 Input
 
-`main.py` forwards `input.json` exactly as written. The sample looks up one domain, reads a single page from Google and keeps at most ten creatives, so a first run finishes quickly and costs a few cents. Add `dateFrom` and `dateTo` in `YYYY-MM-DD` form to narrow the window; without them the Actor looks back 365 days from today in UTC.
+`main.py` reads `input.json` and forwards it unchanged. The bundled file looks up one brand and stops at 50 ads over at most 2 result pages, so a first run costs about $0.35 (the $0.20 run fee plus 50 ads at $0.003). Add domains or `advertiserIds`, or set `dateFrom` and `dateTo`, when you want a wider pull.
 
 ```json
 {
   "searchDomains": [
     "nike.com"
   ],
-  "maxResults": 10,
-  "maxPages": 1,
+  "region": "anywhere",
+  "maxResults": 50,
+  "maxPages": 2,
   "proxyConfiguration": {
     "useApifyProxy": true
   }
@@ -100,7 +101,7 @@ for item in client.dataset(run.default_dataset_id).iterate_items():
 
 ## 📤 Output
 
-In the default mode a row stands for one ad creative. Dates arrive as Unix seconds, which pandas converts with `unit="s"`. `format_type` is Google's numeric code rather than a label, and `region` simply echoes the region you passed, because Google's search does not filter on it. Rows from screening mode fill `domain`, `has_ads_detected`, `ad_count` and the other summary columns instead.
+Each row is one ad creative. Dates arrive as Unix seconds exactly as Google reports them, and `region` simply echoes the label you sent: Google returns the same ads whatever region you pick. With `screeningMode` on you receive one summary row per domain instead.
 
 | Field | Type | Always present |
 |---|---|---|
@@ -135,7 +136,7 @@ Prices as configured on 2026-10-16. The [Actor page](https://apify.com/DevilScra
 
 ## 🛠️ Working with the data in Python
 
-The pandas script below (`pip install pandas`) converts both timestamps into datetimes, works out how many days each creative ran, summarises every advertiser and writes the ten longest-running ads to `long_runners.csv`. The format labels follow the 1, 2, 3 mapping described above, which is inferred rather than documented by Google.
+Here is a short pandas analysis (`pip install pandas`). It turns the timestamps into dates, computes how many days each ad was live, labels the format and writes the 25 longest-running ads to a CSV for review.
 
 ```python
 import json
@@ -143,40 +144,35 @@ import json
 import pandas as pd
 
 ads = pd.DataFrame(json.load(open("results.json", encoding="utf-8")))
-for col in ("first_shown_ts", "last_shown_ts"):
-    ads[col.replace("_ts", "")] = pd.to_datetime(ads[col], unit="s", utc=True)
-ads["days_live"] = (ads["last_shown"] - ads["first_shown"]).dt.days
-ads["format"] = ads["format_type"].map({1: "text", 2: "image", 3: "video"}).fillna("other")
+for column in ("first_shown_ts", "last_shown_ts"):
+    ads[column] = pd.to_datetime(ads[column], unit="s", utc=True)
 
-summary = ads.groupby("advertiser_name").agg(
-    creatives=("creative_id", "nunique"),
-    median_days_live=("days_live", "median"),
-    newest_start=("first_shown", "max"),
-)
-print(summary.sort_values("creatives", ascending=False).to_string())
-print(pd.crosstab(ads["advertiser_name"], ads["format"]).to_string())
+ads["days_live"] = (ads["last_shown_ts"] - ads["first_shown_ts"]).dt.days
+ads["format"] = ads["format_type"].map({1: "text", 2: "image", 3: "video"})
 
-veterans = ads.sort_values("days_live", ascending=False).head(10)
-veterans[["advertiser_name", "creative_id", "days_live", "creative_url"]].to_csv("long_runners.csv", index=False)
+longest = ads.sort_values("days_live", ascending=False).head(25)
+columns = ["advertiser_name", "format", "days_live", "impressions", "landing_domain", "creative_url"]
+longest[columns].to_csv("longest_running.csv", index=False)
+print(longest[columns[:4]].to_string(index=False))
 ```
 
 ## ❓ FAQ
 
-### Does Google offer an official API for the Ads Transparency Center?
+### Does Google offer an official API for this registry?
 
-Google does not publish one for this data. The Actor gives you a programmatic route with nothing more than an Apify token, so a notebook or a scheduled job can query advertisers without anyone opening the Transparency Center site.
+Google does not publish one for the Transparency Center. The Actor fills that gap: you call it with an Apify token and receive structured rows, with no Google account, developer key or approval step.
 
-### Can I restrict results to one country?
+### Why does a big advertiser stop at roughly 1,000 ads?
 
-Not through this Actor. Google's search returns the same creatives whatever region is requested, so `region` is stored on each row as a label for your own bookkeeping and does not narrow the data.
+Google stops answering a single query after about 1,000 ads. To reach further, split the pull by date window with `dateFrom` and `dateTo`, then merge the files on `creative_id`.
 
-### Why do some rows have no `preview_image_url`?
+### Can I restrict the results to one country?
 
-Only static image creatives come with a direct image link. Video and animated creatives carry `preview_content_js_url` instead, a script Google uses to render the preview, so plan on separate handling for those rows in your analysis.
+Not today. The `region` input is stored on each row as a label so you can organise exports by market, but Google returns the same set of ads for every value. Treat it as bookkeeping, not as a filter.
 
-### How do I check a few hundred domains without paying for every ad?
+### What does a video ad look like in the output?
 
-Turn on `screeningMode`. Each domain then produces one summary row, charged as one result, with `has_ads_detected` and `ad_count`. Note that the count only covers creatives fetched within `maxPages` and `maxResults`, so treat it as a lower bound.
+Video and animated ads have no still image. They carry `preview_content_js_url`, a link to the script bundle Google uses to draw the ad, while static image ads carry `preview_image_url`. Showing the video frame itself needs a browser on your side.
 
 ## 🧯 Troubleshooting
 
@@ -187,17 +183,19 @@ Turn on `screeningMode`. Each domain then produces one summary row, charged as o
 
 ## 🔗 More from Devil Scrapes
 
-- [Google Ads Transparency Scraper — Advertiser Ad Library Export on Apify Store](https://apify.com/DevilScrapes/google-ads-transparency)
+- [Google Ads Transparency Center Scraper & API on Apify Store](https://apify.com/DevilScrapes/google-ads-transparency)
 - [JavaScript version of this example](https://github.com/devilscrapes/google-ads-transparency-scraper-javascript)
 - [All Devil Scrapes Actors](https://apify.com/DevilScrapes)
 - [Apify web scraping cookbook](https://github.com/devilscrapes/apify-web-scraping-cookbook)
 
 Related Actors:
 
-- [Meta Ad Library Scraper — Ad Search & Export](https://apify.com/DevilScrapes/meta-ad-library-scraper) — the same competitor question asked of Facebook and Instagram ads.
-- [TikTok Ad Library Scraper](https://apify.com/DevilScrapes/tiktok-ad-library-scraper) — ads from TikTok's commercial content library.
-- [Apple Ad Repository Scraper](https://apify.com/DevilScrapes/apple-ad-repository-scraper) — App Store search ads from Apple's ad repository.
+- [Meta Ad Library Scraper — Ad Search & Export](https://apify.com/DevilScrapes/meta-ad-library-scraper) — Facebook and Instagram ads, found by advertiser or keyword.
+- [TikTok Ad Library Scraper](https://apify.com/DevilScrapes/tiktok-ad-library-scraper) — commercial content from TikTok's ad library.
+- [Pinterest Ad Library Scraper — Ad Search & Export](https://apify.com/DevilScrapes/pinterest-ad-library-scraper) — Pinterest ads grouped by advertiser.
+- [Bing Ad Library Scraper — Ad Search & Export](https://apify.com/DevilScrapes/bing-ad-library-scraper) — the Microsoft Advertising ad library.
+- [Apple Ad Repository Scraper](https://apify.com/DevilScrapes/apple-ad-repository-scraper) — App Store Search Ads.
 
 ---
 
-MIT licensed example code. The Actor itself runs on [Apify](https://apify.com/DevilScrapes/google-ads-transparency) and is maintained by [Devil Scrapes](https://apify.com/DevilScrapes). Not affiliated with Google or Alphabet.
+MIT licensed example code. The Actor itself runs on [Apify](https://apify.com/DevilScrapes/google-ads-transparency) and is maintained by [Devil Scrapes](https://apify.com/DevilScrapes). Not affiliated with Google or the Google Ads Transparency Center.

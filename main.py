@@ -1,6 +1,6 @@
 """Run an Apify Actor and save its results as JSON and CSV.
 
-Actor: Google Ads Transparency Scraper — Advertiser Ad Library Export
+Actor: Google Ads Transparency Center Scraper & API
 
 Actor page: https://apify.com/DevilScrapes/google-ads-transparency
 """
@@ -17,7 +17,7 @@ from pathlib import Path
 from apify_client import ApifyClient
 
 ACTOR_ID = "DevilScrapes/google-ads-transparency"
-ACTOR_TITLE = "Google Ads Transparency Scraper — Advertiser Ad Library Export"
+ACTOR_TITLE = "Google Ads Transparency Center Scraper & API"
 TERMINAL_OK = "SUCCEEDED"
 
 
